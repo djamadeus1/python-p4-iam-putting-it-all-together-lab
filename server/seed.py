@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 from random import randint, choice as rc
-
 from faker import Faker
-
 from app import app
 from models import db, Recipe, User
 
@@ -15,8 +13,6 @@ with app.app_context():
     Recipe.query.delete()
     User.query.delete()
 
-    fake = Faker()
-
     print("Creating users...")
 
     # make sure users have unique usernames
@@ -24,7 +20,6 @@ with app.app_context():
     usernames = []
 
     for i in range(20):
-        
         username = fake.first_name()
         while username in usernames:
             username = fake.first_name()
@@ -36,7 +31,8 @@ with app.app_context():
             image_url=fake.url(),
         )
 
-        user.password_hash = user.username + 'password'
+        # Set the password using the password setter
+        user.password = f"{username}password"
 
         users.append(user)
 
@@ -50,7 +46,7 @@ with app.app_context():
         recipe = Recipe(
             title=fake.sentence(),
             instructions=instructions,
-            minutes_to_complete=randint(15,90),
+            minutes_to_complete=randint(15, 90),
         )
 
         recipe.user = rc(users)

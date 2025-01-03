@@ -17,6 +17,9 @@ class User(db.Model, SerializerMixin):
     # Relationships
     recipes = db.relationship("Recipe", backref="user", cascade="all, delete-orphan")
 
+    # Serialization Rules to prevent recursion
+    serialize_rules = ('-recipes.user',)
+
     # Password property
     @hybrid_property
     def password(self):
@@ -59,6 +62,9 @@ class Recipe(db.Model, SerializerMixin):
 
     # Foreign Key
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    # Serialization Rules to prevent recursion
+    serialize_rules = ('-user.recipes',)
 
     # Validation
     @validates("title", "instructions")
